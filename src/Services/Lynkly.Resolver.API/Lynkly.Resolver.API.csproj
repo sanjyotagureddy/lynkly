@@ -1,17 +1,22 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
 
+  <PropertyGroup>
+    <UserSecretsId>1c9b6ccb-48c0-4fba-ab8f-e7cd7a749dc5</UserSecretsId>
+    <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+    <DockerfileContext>..\..\..</DockerfileContext>
+  </PropertyGroup>
+
   <ItemGroup>
     <PackageReference Include="FluentValidation.DependencyInjectionExtensions" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" />
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" />
+    <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\aspire\lynkly.ServiceDefaults\lynkly.ServiceDefaults.csproj" />
     <ProjectReference Include="..\..\Core\Lynkly.Resolver.Application\Lynkly.Resolver.Application.csproj" />
-    <ProjectReference Include="..\..\Infrastructure\Lynkly.Resolver.Caching\Lynkly.Resolver.Caching.csproj" />
-    <ProjectReference Include="..\..\Infrastructure\Lynkly.Resolver.Messaging\Lynkly.Resolver.Messaging.csproj" />
-    <ProjectReference Include="..\..\Infrastructure\Lynkly.Resolver.Persistence\Lynkly.Resolver.Persistence.csproj" />
+    <ProjectReference Include="..\..\Infrastructure\Lynkly.Resolver.Infrastructure\Lynkly.Resolver.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>

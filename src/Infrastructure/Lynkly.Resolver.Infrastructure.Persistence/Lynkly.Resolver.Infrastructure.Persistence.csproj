@@ -4,15 +4,13 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="MassTransit" />
-    <PackageReference Include="MassTransit.RabbitMQ" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" />
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\Core\Lynkly.Resolver.Application\Lynkly.Resolver.Application.csproj" />
     <ProjectReference Include="..\..\Core\Lynkly.Resolver.Domain\Lynkly.Resolver.Domain.csproj" />
-    <ProjectReference Include="..\..\..\shared\Lynkly.Shared.Kernel.Core\Lynkly.Shared.Kernel.Core.csproj" />
-    <ProjectReference Include="..\..\..\shared\Lynkly.Shared.Kernel.Messaging\Lynkly.Shared.Kernel.Messaging.csproj" />
     <ProjectReference Include="..\..\..\shared\Lynkly.Shared.Kernel.Persistence\Lynkly.Shared.Kernel.Persistence.csproj" />
   </ItemGroup>
 

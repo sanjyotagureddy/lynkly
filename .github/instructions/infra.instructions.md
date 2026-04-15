@@ -19,6 +19,9 @@ Applies to infrastructure adapters only:
 2. Keep broker-specific and storage-specific details isolated to Infrastructure.
 3. Prefer explicit adapters and registrations over hidden magic.
 4. Keep implementations replaceable (RabbitMQ today, Kafka later).
+5. Keep infrastructure implementation types internal by default.
+6. Expose only the public contracts needed for composition, options, or cross-assembly integration.
+7. When internal infrastructure types must be unit-tested from a separate test project, expose them with `InternalsVisibleTo` in `Properties/AssemblyInfo.cs` of the production project.
 
 ## EF Core and Persistence
 
@@ -27,6 +30,7 @@ Applies to infrastructure adapters only:
 3. Add migrations for schema changes and give migrations clear, intent-based names.
 4. Validate migration creation and application paths for every persistence change.
 5. Keep queries predictable; avoid accidental N+1 patterns and unbounded scans.
+6. Keep mapping helpers, converters, and repository internals internal unless they must be public for EF Core or assembly composition.
 
 ## Caching
 
