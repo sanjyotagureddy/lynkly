@@ -48,7 +48,9 @@ public static class ConversionHelper
             }
 
             var result = Convert.ChangeType(value, targetType, formatProvider ?? CultureInfo.InvariantCulture);
-            converted = (T?)result;
+            converted = isNullableTarget
+                ? (T?)(object)result!
+                : (T?)result;
             return true;
         }
         catch (FormatException)
