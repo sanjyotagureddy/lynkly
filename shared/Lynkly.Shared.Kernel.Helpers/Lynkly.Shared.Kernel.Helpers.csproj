@@ -9,8 +9,4 @@
     <PackageId>Lynkly.Shared.Kernel.Helpers</PackageId>
   </PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Newtonsoft.Json" />
-  </ItemGroup>
-
 </Project>
