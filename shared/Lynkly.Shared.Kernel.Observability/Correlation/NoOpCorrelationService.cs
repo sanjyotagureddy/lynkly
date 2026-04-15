@@ -4,6 +4,6 @@ internal sealed class NoOpCorrelationService : ICorrelationService
 {
     public string GetOrCreateCorrelationId()
     {
-        return string.Empty;
+        return Guid.NewGuid().ToString("N");
     }
 }
