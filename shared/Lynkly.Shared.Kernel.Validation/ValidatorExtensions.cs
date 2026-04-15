@@ -32,6 +32,19 @@ public static class ValidatorExtensions
             return;
         }
 
-        throw new ValidationAppException(validationResult.Errors);
+        throw new ValidationAppException(MapErrors(validationResult.Errors));
+    }
+
+    private static IReadOnlyList<ErrorDetail> MapErrors(IEnumerable<ValidationFailure> failures)
+    {
+        ArgumentNullException.ThrowIfNull(failures);
+
+        return failures
+            .Where(f => f is not null)
+            .Select(f => new ErrorDetail(
+                string.IsNullOrWhiteSpace(f.PropertyName) ? null : f.PropertyName,
+                f.ErrorMessage,
+                string.IsNullOrWhiteSpace(f.ErrorCode) ? null : f.ErrorCode))
+            .ToArray();
     }
 }
