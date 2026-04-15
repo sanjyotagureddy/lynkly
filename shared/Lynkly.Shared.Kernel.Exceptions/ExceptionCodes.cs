@@ -3,6 +3,7 @@ namespace Lynkly.Shared.Kernel.Exceptions;
 public static class ExceptionCodes
 {
     public const string Unexpected = "error.unexpected";
+    public const string ValidationFailed = "error.validation.failed";
 
     public static class UrlShortener
     {
