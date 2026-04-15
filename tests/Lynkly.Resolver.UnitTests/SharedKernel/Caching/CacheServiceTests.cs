@@ -80,6 +80,21 @@ public sealed class CacheServiceTests
         Assert.Equal(1, invocationCount);
     }
 
+    [Fact]
+    public void AddKernelCaching_Should_Throw_When_DistributedOnly_And_IDistributedCache_Is_Not_Registered()
+    {
+        var services = new ServiceCollection();
+
+        var exception = Assert.Throws<InvalidOperationException>(() =>
+            services.AddKernelCaching(options =>
+            {
+                options.EnableInMemoryProvider = false;
+                options.EnableDistributedProvider = true;
+            }));
+
+        Assert.Contains("IDistributedCache", exception.Message, StringComparison.Ordinal);
+    }
+
     private sealed class FakeDistributedCache : IDistributedCache
     {
         private readonly Dictionary<string, byte[]> _store = new(StringComparer.Ordinal);

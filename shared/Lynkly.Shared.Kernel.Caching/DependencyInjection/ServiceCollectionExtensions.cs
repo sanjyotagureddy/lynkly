@@ -24,6 +24,15 @@ public static class ServiceCollectionExtensions
             throw new InvalidOperationException("At least one cache provider must be enabled.");
         }
 
+        if (!registrationOptions.EnableInMemoryProvider
+            && registrationOptions.EnableDistributedProvider
+            && !services.Any(descriptor => descriptor.ServiceType == typeof(IDistributedCache)))
+        {
+            throw new InvalidOperationException(
+                "Distributed caching is enabled without in-memory fallback, but no IDistributedCache is registered. " +
+                "Register IDistributedCache before calling AddKernelCaching or enable the in-memory provider.");
+        }
+
         services.TryAddSingleton(registrationOptions);
         services.TryAddSingleton<ICacheSerializer, JsonCacheSerializer>();
 
