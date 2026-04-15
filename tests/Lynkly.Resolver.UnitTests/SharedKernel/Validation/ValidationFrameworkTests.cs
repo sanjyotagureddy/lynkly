@@ -54,15 +54,12 @@ public sealed class ValidationFrameworkTests
     [Fact]
     public void ValidationAppException_Should_Map_ValidationFailures_To_ErrorDetails()
     {
-        var failures = new[]
+        var errors = new[]
         {
-            new ValidationFailure("name", "Name is required")
-            {
-                ErrorCode = "NotEmptyValidator"
-            }
+            new ErrorDetail("name", "Name is required", "NotEmptyValidator")
         };
 
-        var exception = new ValidationAppException(failures, "Invalid request payload.");
+        var exception = new ValidationAppException(errors, "Invalid request payload.");
 
         Assert.Equal("Invalid request payload.", exception.Message);
         Assert.Single(exception.Errors);
