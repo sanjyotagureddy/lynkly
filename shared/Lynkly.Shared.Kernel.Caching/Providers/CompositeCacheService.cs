@@ -1,0 +1,121 @@
+using System.Collections.Concurrent;
+using Lynkly.Shared.Kernel.Caching.Abstractions;
+using Lynkly.Shared.Kernel.Caching.DependencyInjection;
+
+namespace Lynkly.Shared.Kernel.Caching.Providers;
+
+internal sealed class CompositeCacheService : ICacheService
+{
+    private readonly IReadOnlyList<ICacheProvider> _providers;
+    private readonly CacheServiceRegistrationOptions _registrationOptions;
+    private readonly ConcurrentDictionary<string, SemaphoreSlim> _keyLocks = new(StringComparer.Ordinal);
+
+    public CompositeCacheService(
+        IEnumerable<ICacheProvider> providers,
+        CacheServiceRegistrationOptions registrationOptions)
+    {
+        ArgumentNullException.ThrowIfNull(providers);
+        ArgumentNullException.ThrowIfNull(registrationOptions);
+
+        _providers = providers.Where(provider => provider.IsAvailable).ToArray();
+        if (_providers.Count == 0)
+        {
+            throw new InvalidOperationException("No available cache providers were registered.");
+        }
+
+        _registrationOptions = registrationOptions;
+    }
+
+    public async Task<TValue?> GetAsync<TValue>(
+        CacheKey<TValue> key,
+        CancellationToken cancellationToken = default)
+    {
+        for (var i = 0; i < _providers.Count; i++)
+        {
+            var provider = _providers[i];
+            var value = await provider.GetAsync<TValue>(key.Value, cancellationToken);
+            if (value is null)
+            {
+                continue;
+            }
+
+            if (_registrationOptions.BackfillEarlierProvidersOnReadHit && i > 0)
+            {
+                var tasks = _providers
+                    .Take(i)
+                    .Select(previousProvider =>
+                        previousProvider.SetAsync(key.Value, value, _registrationOptions.DefaultEntryOptions, cancellationToken));
+
+                await Task.WhenAll(tasks);
+            }
+
+            return value;
+        }
+
+        return default;
+    }
+
+    public async Task SetAsync<TValue>(
+        CacheKey<TValue> key,
+        TValue value,
+        CacheEntryOptions? options = null,
+        CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(value);
+
+        var effectiveOptions = options ?? _registrationOptions.DefaultEntryOptions;
+        var tasks = _providers.Select(provider =>
+            provider.SetAsync(key.Value, value, effectiveOptions, cancellationToken));
+
+        await Task.WhenAll(tasks);
+    }
+
+    public async Task RemoveAsync<TValue>(
+        CacheKey<TValue> key,
+        CancellationToken cancellationToken = default)
+    {
+        var tasks = _providers.Select(provider => provider.RemoveAsync(key.Value, cancellationToken));
+        await Task.WhenAll(tasks);
+    }
+
+    public async Task<TValue> GetOrCreateAsync<TValue>(
+        CacheKey<TValue> key,
+        Func<CancellationToken, Task<TValue>> factory,
+        CacheEntryOptions? options = null,
+        CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(factory);
+
+        var cached = await GetAsync(key, cancellationToken);
+        if (cached is not null)
+        {
+            return cached;
+        }
+
+        var keyLock = _keyLocks.GetOrAdd(key.Value, _ => new SemaphoreSlim(1, 1));
+        await keyLock.WaitAsync(cancellationToken);
+
+        try
+        {
+            cached = await GetAsync(key, cancellationToken);
+            if (cached is not null)
+            {
+                return cached;
+            }
+
+            var created = await factory(cancellationToken);
+            ArgumentNullException.ThrowIfNull(created);
+
+            await SetAsync(key, created, options, cancellationToken);
+            return created;
+        }
+        finally
+        {
+            keyLock.Release();
+            if (keyLock.CurrentCount == 1)
+            {
+                _keyLocks.TryRemove(key.Value, out _);
+            }
+        }
+    }
+}
