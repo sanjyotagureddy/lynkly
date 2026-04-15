@@ -1,0 +1,59 @@
+using System.Globalization;
+
+namespace Lynkly.Shared.Kernel.Helpers;
+
+/// <summary>
+/// Provides safe conversion helper methods.
+/// </summary>
+public static class ConversionHelper
+{
+    /// <summary>
+    /// Converts value to target type or returns fallback.
+    /// </summary>
+    public static T ConvertOrDefault<T>(object? value, T fallback = default!, IFormatProvider? formatProvider = null)
+    {
+        return TryConvert(value, out T? converted, formatProvider) ? converted! : fallback;
+    }
+
+    /// <summary>
+    /// Attempts to convert value to target type.
+    /// </summary>
+    public static bool TryConvert<T>(object? value, out T? converted, IFormatProvider? formatProvider = null)
+    {
+        if (value is null)
+        {
+            converted = default;
+            return false;
+        }
+
+        var targetType = Nullable.GetUnderlyingType(typeof(T)) ?? typeof(T);
+
+        try
+        {
+            if (targetType.IsEnum)
+            {
+                if (value is string enumString && Enum.TryParse(targetType, enumString, true, out var enumResult))
+                {
+                    converted = (T)enumResult;
+                    return true;
+                }
+
+                if (value.GetType().IsPrimitive)
+                {
+                    var numericValue = Convert.ChangeType(value, Enum.GetUnderlyingType(targetType), formatProvider ?? CultureInfo.InvariantCulture);
+                    converted = (T)Enum.ToObject(targetType, numericValue!);
+                    return true;
+                }
+            }
+
+            var result = Convert.ChangeType(value, targetType, formatProvider ?? CultureInfo.InvariantCulture);
+            converted = (T?)result;
+            return true;
+        }
+        catch
+        {
+            converted = default;
+            return false;
+        }
+    }
+}

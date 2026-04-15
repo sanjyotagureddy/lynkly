@@ -1,0 +1,39 @@
+namespace Lynkly.Shared.Kernel.Helpers;
+
+/// <summary>
+/// Provides collection extension methods.
+/// </summary>
+public static class CollectionExtensions
+{
+    /// <summary>
+    /// Determines whether sequence is null or empty.
+    /// </summary>
+    public static bool IsNullOrEmpty<T>(this IEnumerable<T>? source)
+    {
+        return source is null || !source.Any();
+    }
+
+    /// <summary>
+    /// Filters null values from a nullable sequence.
+    /// </summary>
+    public static IEnumerable<T> WhereNotNull<T>(this IEnumerable<T?> source)
+        where T : class
+    {
+        ArgumentNullException.ThrowIfNull(source);
+        return source.Where(item => item is not null)!;
+    }
+
+    /// <summary>
+    /// Executes an action for each item in the sequence.
+    /// </summary>
+    public static void ForEach<T>(this IEnumerable<T> source, Action<T> action)
+    {
+        ArgumentNullException.ThrowIfNull(source);
+        ArgumentNullException.ThrowIfNull(action);
+
+        foreach (var item in source)
+        {
+            action(item);
+        }
+    }
+}
