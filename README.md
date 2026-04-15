@@ -205,17 +205,41 @@ Example payload:
 
 ### Links table
 
-- Slug (PK, globally unique)
-- OriginalUrl
+- LinkId (PK, time-sortable UUIDv7 or ULID)
+- TenantId
+- DestinationUrl
 - CreatedAtUtc
+- UpdatedAtUtc
 - ExpiresAtUtc (nullable)
-- IsActive
-- TenantId (nullable for single-tenant mode)
+- Status
+
+Status values:
+
+- Active
+- Disabled
+- Archived
+- Blocked
+
+### LinkAliases table
+
+- TenantId
+- Optional DomainId
+- Alias
+- LinkId (FK)
+- CreatedAtUtc
+
+### CustomDomains table
+
+- DomainId (PK)
+- TenantId
+- DomainName
+- VerificationStatus
+- CreatedAtUtc
 
 ### Clicks table
 
 - Id
-- Slug
+- LinkId
 - TimestampUtc
 - Ip
 - UserAgent
@@ -223,7 +247,7 @@ Example payload:
 
 ### LinkStats table (aggregated)
 
-- Slug
+- LinkId
 - TotalClicks
 - UniqueVisitors
 - LastAccessedAtUtc
@@ -231,9 +255,11 @@ Example payload:
 
 Design notes:
 
-- Keep redirect lookup data compact.
+- Keep redirect lookup data in a dedicated alias table rather than the canonical link record.
 - Use append-only Clicks + precomputed LinkStats for fast analytics reads.
-- Partition to avoid hot spots.
+- Partition Clicks and rollups by time.
+- Prefer tenant-aware uniqueness for aliases and domains so custom branding and SaaS tenancy scale cleanly.
+- Treat Blocked as an admin/abuse state that returns `410 Gone` on redirect and stays out of the hot redirect path through status-aware filtering.
 
 ## API Surface
 

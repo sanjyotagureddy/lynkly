@@ -9,9 +9,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\..\aspire\lynkly.ServiceDefaults\lynkly.ServiceDefaults.csproj" />
     <ProjectReference Include="..\..\Core\Lynkly.Resolver.Application\Lynkly.Resolver.Application.csproj" />
-    <ProjectReference Include="..\..\Infrastructure\Lynkly.Resolver.Caching\Lynkly.Resolver.Caching.csproj" />
-    <ProjectReference Include="..\..\Infrastructure\Lynkly.Resolver.Messaging\Lynkly.Resolver.Messaging.csproj" />
-    <ProjectReference Include="..\..\Infrastructure\Lynkly.Resolver.Persistence\Lynkly.Resolver.Persistence.csproj" />
+    <ProjectReference Include="..\..\Infrastructure\Lynkly.Resolver.Infrastructure\Lynkly.Resolver.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>

@@ -19,9 +19,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Infrastructure\Lynkly.Resolver.Caching\Lynkly.Resolver.Caching.csproj" />
-    <ProjectReference Include="..\..\src\Infrastructure\Lynkly.Resolver.Messaging\Lynkly.Resolver.Messaging.csproj" />
-    <ProjectReference Include="..\..\src\Infrastructure\Lynkly.Resolver.Persistence\Lynkly.Resolver.Persistence.csproj" />
+    <ProjectReference Include="..\..\src\Infrastructure\Lynkly.Resolver.Caching\Lynkly.Resolver.Infrastructure.Caching.csproj" />
+    <ProjectReference Include="..\..\src\Infrastructure\Lynkly.Resolver.Messaging\Lynkly.Resolver.Infrastructure.Messaging.csproj" />
+    <ProjectReference Include="..\..\src\Infrastructure\Lynkly.Resolver.Persistence\Lynkly.Resolver.Infrastructure.Persistence.csproj" />
   </ItemGroup>
 
 </Project>

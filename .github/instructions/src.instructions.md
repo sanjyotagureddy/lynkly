@@ -162,6 +162,14 @@ If a change affects messaging, also validate:
 6. Do not introduce new architectural patterns without a strong reason.
 7. Do not move business rules into middleware, handlers, or infrastructure wrappers just to reduce perceived coupling.
 
+## Access Modifier and Test Visibility Rules
+
+1. Keep implementation types internal by default.
+2. Keep interfaces public when they define cross-assembly contracts.
+3. Make classes public only when they are true external contracts for another assembly.
+4. When internal implementation types must be unit-tested from a separate test project, expose them via `InternalsVisibleTo` in the project under test.
+5. Add `InternalsVisibleTo` in `Properties/AssemblyInfo.cs` of the production project, not in test projects.
+
 ## What to Avoid
 
 1. Do not introduce paid dependencies, paid SDKs, or paid cloud services as required parts of the design.

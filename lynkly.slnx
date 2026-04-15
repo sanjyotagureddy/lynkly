@@ -26,9 +26,10 @@
     <Project Path="src/Services/Lynkly.Resolver.API/Lynkly.Resolver.API.csproj" />
   </Folder>
   <Folder Name="/src/Infrastructure/">
-    <Project Path="src/Infrastructure/Lynkly.Resolver.Caching/Lynkly.Resolver.Caching.csproj" />
-    <Project Path="src/Infrastructure/Lynkly.Resolver.Messaging/Lynkly.Resolver.Messaging.csproj" />
-    <Project Path="src/Infrastructure/Lynkly.Resolver.Persistence/Lynkly.Resolver.Persistence.csproj" />
+    <Project Path="src/Infrastructure/Lynkly.Resolver.Infrastructure.Caching/Lynkly.Resolver.Infrastructure.Caching.csproj" />
+    <Project Path="src/Infrastructure/Lynkly.Resolver.Infrastructure/Lynkly.Resolver.Infrastructure.csproj" Id="fd764def-1a25-4f79-81f0-1e5f5006bc47" />
+    <Project Path="src/Infrastructure/Lynkly.Resolver.Infrastructure.Messaging/Lynkly.Resolver.Infrastructure.Messaging.csproj" />
+    <Project Path="src/Infrastructure/Lynkly.Resolver.Infrastructure.Persistence/Lynkly.Resolver.Infrastructure.Persistence.csproj" />
   </Folder>
   <Folder Name="/src/Workers/">
     <Project Path="src/Workers/Lynkly.Resolver.AnalyticsWorker/Lynkly.Resolver.AnalyticsWorker.csproj" />

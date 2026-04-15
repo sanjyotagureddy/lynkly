@@ -1,0 +1,15 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Lynkly.Resolver.Infrastructure.Caching\Lynkly.Resolver.Infrastructure.Caching.csproj" />
+    <ProjectReference Include="..\Lynkly.Resolver.Infrastructure.Messaging\Lynkly.Resolver.Infrastructure.Messaging.csproj" />
+    <ProjectReference Include="..\Lynkly.Resolver.Infrastructure.Persistence\Lynkly.Resolver.Infrastructure.Persistence.csproj" />
+  </ItemGroup>
+
+</Project>
