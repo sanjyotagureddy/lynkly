@@ -10,6 +10,7 @@
   </Folder>
   <Folder Name="/shared/">
     <Project Path="shared/Lynkly.Shared.Kernel.Caching/Lynkly.Shared.Kernel.Caching.csproj" />
+    <Project Path="shared/Lynkly.Shared.Kernel.Context/Lynkly.Shared.Kernel.Context.csproj" />
     <Project Path="shared/Lynkly.Shared.Kernel.Core/Lynkly.Shared.Kernel.Core.csproj" />
     <Project Path="shared/Lynkly.Shared.Kernel.Exceptions/Lynkly.Shared.Kernel.Exceptions.csproj" />
     <Project Path="shared/Lynkly.Shared.Kernel.Helpers/Lynkly.Shared.Kernel.Helpers.csproj" />
@@ -40,6 +41,7 @@
   <Folder Name="/tests/">
     <Project Path="tests/Lynkly.Resolver.IntegrationTests/Lynkly.Resolver.IntegrationTests.csproj" />
     <Project Path="tests/Lynkly.Resolver.UnitTests/Lynkly.Resolver.UnitTests.csproj" />
+    <Project Path="tests/Lynkly.Shared.Kernel.Context.Tests/Lynkly.Shared.Kernel.Context.Tests.csproj" />
     <Project Path="tests/Lynkly.Shared.Kernel.Observability.Tests/Lynkly.Shared.Kernel.Observability.Tests.csproj" />
     <Project Path="tests/Lynkly.Shared.Kernel.Security.Tests/Lynkly.Shared.Kernel.Security.Tests.csproj" />
   </Folder>

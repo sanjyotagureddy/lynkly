@@ -1,5 +1,8 @@
+using System.Diagnostics;
+using System.Security.Claims;
 using Lynkly.Shared.Kernel.Context;
 using Microsoft.Extensions.Hosting;
+using AppContext = Lynkly.Shared.Kernel.Context.AppContext;
 
 namespace Lynkly.Resolver.API.Middlewares;
 
@@ -12,7 +15,7 @@ internal sealed class RequestContextMiddleware(
     {
         ArgumentNullException.ThrowIfNull(httpContext);
 
-        var appContext = AppContext.FromHttpContext(httpContext, environment.ApplicationName);
+        var appContext = BuildAppContext(httpContext, environment.ApplicationName);
 
         foreach (var enricher in enrichers)
         {
@@ -33,5 +36,35 @@ internal sealed class RequestContextMiddleware(
 
             await next(httpContext);
         }
+    }
+
+    private static AppContext BuildAppContext(HttpContext httpContext, string applicationName)
+    {
+        var request = httpContext.Request;
+
+        var correlationId = request.Headers.TryGetValue("X-Correlation-Id", out var correlationValue)
+                            && !string.IsNullOrWhiteSpace(correlationValue.ToString())
+            ? correlationValue.ToString()
+            : null;
+
+        var traceId = Activity.Current?.TraceId.ToString() ?? httpContext.TraceIdentifier;
+        var method = string.IsNullOrWhiteSpace(request.Method) ? HttpMethods.Get : request.Method;
+        var path = request.Path.HasValue ? request.Path.Value! : "/";
+        var userId = httpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
+        var userName = httpContext.User.Identity?.Name;
+        var clientIp = httpContext.Connection.RemoteIpAddress?.ToString();
+        var userAgent = request.Headers.UserAgent.ToString();
+
+        return AppContext.Create(
+            applicationName,
+            httpContext.TraceIdentifier,
+            traceId,
+            method,
+            path,
+            correlationId,
+            userId,
+            userName,
+            clientIp,
+            userAgent);
     }
 }

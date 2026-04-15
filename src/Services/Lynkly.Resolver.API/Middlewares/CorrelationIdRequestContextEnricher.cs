@@ -1,4 +1,5 @@
 using Lynkly.Shared.Kernel.Context;
+using AppContext = Lynkly.Shared.Kernel.Context.AppContext;
 
 namespace Lynkly.Resolver.API.Middlewares;
 
