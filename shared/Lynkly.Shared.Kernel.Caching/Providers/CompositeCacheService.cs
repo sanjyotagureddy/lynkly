@@ -112,10 +112,6 @@ internal sealed class CompositeCacheService : ICacheService
         finally
         {
             keyLock.Release();
-            if (keyLock.CurrentCount == 1)
-            {
-                _keyLocks.TryRemove(key.Value, out _);
-            }
         }
     }
 }

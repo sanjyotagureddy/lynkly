@@ -26,7 +26,6 @@ public static class ServiceCollectionExtensions
 
         services.TryAddSingleton(registrationOptions);
         services.TryAddSingleton<ICacheSerializer, JsonCacheSerializer>();
-        services.AddMemoryCache();
 
         var addDistributedFirst = registrationOptions.ReadPreference == CacheReadPreference.PreferDistributed;
 
@@ -54,6 +53,8 @@ public static class ServiceCollectionExtensions
         {
             return;
         }
+
+        services.AddMemoryCache();
 
         services.AddSingleton<ICacheProvider>(serviceProvider =>
             new InMemoryCacheProvider(
