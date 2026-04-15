@@ -6,7 +6,7 @@ public static class ErrorResponseFactory
     {
         ArgumentNullException.ThrowIfNull(exception);
 
-        var now = timestampUtc ?? DateTimeOffset.UtcNow;
+        var now = timestampUtc?.ToUniversalTime() ?? DateTimeOffset.UtcNow;
 
         if (exception is BaseAppException appException)
         {
