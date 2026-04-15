@@ -10,8 +10,8 @@ public abstract class BaseAppException : Exception
         Exception? innerException = null)
         : base(message, innerException)
     {
-        ArgumentException.ThrowIfNullOrWhiteSpace(code);
-        ArgumentException.ThrowIfNullOrWhiteSpace(message);
+        ArgumentException.ThrowIfNullOrWhiteSpace(code, nameof(code));
+        ArgumentException.ThrowIfNullOrWhiteSpace(message, nameof(message));
 
         if (statusCode is < 100 or > 599)
         {
