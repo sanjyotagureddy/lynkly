@@ -316,7 +316,7 @@ public sealed class AppContextTests
     }
 
     [Fact]
-    public void TryGetItem_WithMissingKey_ReturnsFalseAndEmptyString()
+    public void TryGetItem_WithMissingKey_ReturnsFalseAndNull()
     {
         var ctx = AppContext.Create("app", "req", "trace", "GET", "/");
 
