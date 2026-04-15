@@ -28,6 +28,7 @@
     <ProjectReference Include="..\..\src\Core\Lynkly.Resolver.Application\Lynkly.Resolver.Application.csproj" />
     <ProjectReference Include="..\..\src\Core\Lynkly.Resolver.Domain\Lynkly.Resolver.Domain.csproj" />
     <ProjectReference Include="..\..\shared\Lynkly.Shared.Kernel.Helpers\Lynkly.Shared.Kernel.Helpers.csproj" />
+    <ProjectReference Include="..\..\shared\Lynkly.Shared.Kernel.Validation\Lynkly.Shared.Kernel.Validation.csproj" />
     <ProjectReference Include="..\..\src\Infrastructure\Lynkly.Resolver.Infrastructure.Persistence\Lynkly.Resolver.Infrastructure.Persistence.csproj" />
     <ProjectReference Include="..\..\src\Services\Lynkly.Resolver.API\Lynkly.Resolver.API.csproj" />
   </ItemGroup>
