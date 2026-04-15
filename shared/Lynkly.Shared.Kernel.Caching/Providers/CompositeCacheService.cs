@@ -60,11 +60,11 @@ internal sealed class CompositeCacheService : ICacheService
                     {
                         try
                         {
-                            await previousProvider.SetAsync(key.Value, value, _registrationOptions.DefaultEntryOptions, cancellationToken);
-                        }
-                        catch (OperationCanceledException)
-                        {
-                            throw;
+                            await previousProvider.SetAsync(
+                                key.Value,
+                                value,
+                                _registrationOptions.DefaultEntryOptions,
+                                CancellationToken.None);
                         }
                         catch
                         {
@@ -89,10 +89,20 @@ internal sealed class CompositeCacheService : ICacheService
         ArgumentNullException.ThrowIfNull(value);
 
         var effectiveOptions = options ?? _registrationOptions.DefaultEntryOptions;
-        var tasks = _providers.Select(provider =>
-            provider.SetAsync(key.Value, value, effectiveOptions, cancellationToken));
-
-        await Task.WhenAll(tasks);
+        foreach (var provider in _providers)
+        {
+            try
+            {
+                await provider.SetAsync(key.Value, value, effectiveOptions, cancellationToken);
+            }
+            catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+            {
+                throw;
+            }
+            catch
+            {
+            }
+        }
     }
 
     public async Task RemoveAsync<TValue>(
@@ -153,7 +163,7 @@ internal sealed class CompositeCacheService : ICacheService
 
     private SemaphoreSlim GetKeyLock(string key)
     {
-        var index = (int)(unchecked((uint)StringComparer.Ordinal.GetHashCode(key)) % (uint)_keyLocks.Length);
+        var index = (int)(unchecked((uint)key.GetHashCode(StringComparison.Ordinal)) % (uint)_keyLocks.Length);
         return _keyLocks[index];
     }
 }

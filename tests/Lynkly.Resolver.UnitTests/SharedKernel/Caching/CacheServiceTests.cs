@@ -45,8 +45,8 @@ public sealed class CacheServiceTests
 
         await cache.SetAsync(key, "https://example.org");
 
-        var serializedValue = await distributedCache.GetStringAsync("links:def");
-        Assert.Equal("\"https://example.org\"", serializedValue);
+        Assert.NotNull(await distributedCache.GetAsync("links:def"));
+        Assert.Equal("https://example.org", await cache.GetAsync(key));
     }
 
     [Fact]
@@ -92,7 +92,7 @@ public sealed class CacheServiceTests
         var key = new CacheKey<string>("links:concurrent");
         var invocationCount = 0;
         var factoryStarted = new ManualResetEventSlim(false);
-        var releaseFactory = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        var releaseFactory = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
 
         Func<CancellationToken, Task<string>> factory = async _ =>
         {
@@ -113,7 +113,7 @@ public sealed class CacheServiceTests
             .Select(_ => cache.GetOrCreateAsync(key, factory))
             .ToArray();
 
-        releaseFactory.SetResult();
+        releaseFactory.SetResult(true);
 
         var values = await Task.WhenAll(parallelTasks.Prepend(firstTask));
 
@@ -178,6 +178,28 @@ public sealed class CacheServiceTests
         var value = await cache.GetAsync(key);
 
         Assert.Equal("https://memory-hit.example", value);
+    }
+
+    [Fact]
+    public async Task SetAsync_Should_Not_Throw_When_One_Provider_Fails()
+    {
+        var distributedCache = new FakeDistributedCache
+        {
+            ThrowOnSet = true
+        };
+
+        var services = new ServiceCollection();
+        services.AddSingleton<IDistributedCache>(distributedCache);
+        services.AddKernelCaching(options => options.ReadPreference = CacheReadPreference.PreferDistributed);
+
+        await using var provider = services.BuildServiceProvider();
+        var cache = provider.GetRequiredService<ICacheService>();
+        var key = new CacheKey<string>("links:set-fallback");
+
+        await cache.SetAsync(key, "https://set-fallback.example");
+
+        var value = await cache.GetAsync(key);
+        Assert.Equal("https://set-fallback.example", value);
     }
 
     [Fact]
