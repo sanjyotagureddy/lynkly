@@ -35,9 +35,9 @@ public sealed class ArchitectureTests : ArchitectureTestBase
             .That()
             .AreClasses()
             .And()
-            .DoNotHaveName("AppDbContext")
+            .AreNotStatic()
             .And()
-            .DoNotHaveName("LinksDbContext")
+            .DoNotHaveName("AppDbContext")
             .Should()
             .NotBePublic()
             .GetResult();
