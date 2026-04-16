@@ -1,5 +1,8 @@
 using System.Reflection;
-using Lynkly.Shared.Kernel.Helpers;
+
+using Lynkly.Shared.Kernel.Core.Helpers;
+using Lynkly.Shared.Kernel.Core.Helpers.Reflection;
+using Lynkly.Shared.Kernel.Core.Helpers.Threading;
 
 namespace Lynkly.Resolver.UnitTests.SharedKernel.Helpers;
 

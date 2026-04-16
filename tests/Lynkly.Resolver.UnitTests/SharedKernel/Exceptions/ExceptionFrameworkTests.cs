@@ -1,5 +1,5 @@
-using Lynkly.Shared.Kernel.Exceptions;
-using Lynkly.Shared.Kernel.Exceptions.UrlShortener;
+using Lynkly.Shared.Kernel.Core.Exceptions;
+using Lynkly.Shared.Kernel.Core.Exceptions.UrlShortener;
 
 namespace Lynkly.Resolver.UnitTests.SharedKernel.Exceptions;
 

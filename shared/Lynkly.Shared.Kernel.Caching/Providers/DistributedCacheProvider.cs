@@ -5,31 +5,25 @@ using System.Text.Json;
 
 namespace Lynkly.Shared.Kernel.Caching.Providers;
 
-internal sealed class DistributedCacheProvider : ICacheProvider
+internal sealed class DistributedCacheProvider(
+  IDistributedCache? distributedCache,
+  ICacheSerializer serializer)
+  : ICacheProvider
 {
-    private readonly IDistributedCache? _distributedCache;
-    private readonly ICacheSerializer _serializer;
-
-    public DistributedCacheProvider(
-        IDistributedCache? distributedCache,
-        ICacheSerializer serializer)
-    {
-        _distributedCache = distributedCache;
-        _serializer = serializer ?? throw new ArgumentNullException(nameof(serializer));
-    }
+  private readonly ICacheSerializer _serializer = serializer ?? throw new ArgumentNullException(nameof(serializer));
 
     public string Name => "distributed";
 
-    public bool IsAvailable => _distributedCache is not null;
+    public bool IsAvailable => distributedCache is not null;
 
     public async Task<TValue?> GetAsync<TValue>(string key, CancellationToken cancellationToken = default)
     {
-        if (_distributedCache is null)
+        if (distributedCache is null)
         {
             return default;
         }
 
-        var bytes = await _distributedCache.GetAsync(key, cancellationToken);
+        var bytes = await distributedCache.GetAsync(key, cancellationToken);
         if (bytes is null)
         {
             return default;
@@ -57,35 +51,35 @@ internal sealed class DistributedCacheProvider : ICacheProvider
         CacheEntryOptions options,
         CancellationToken cancellationToken = default)
     {
-        if (_distributedCache is null)
+        if (distributedCache is null)
         {
             return;
         }
 
         var payload = _serializer.Serialize(value);
-        await _distributedCache.SetAsync(key, payload, ToDistributedOptions(options), cancellationToken);
+        await distributedCache.SetAsync(key, payload, ToDistributedOptions(options), cancellationToken);
     }
 
     public Task RemoveAsync(string key, CancellationToken cancellationToken = default)
     {
-        if (_distributedCache is null)
+        if (distributedCache is null)
         {
             return Task.CompletedTask;
         }
 
-        return _distributedCache.RemoveAsync(key, cancellationToken);
+        return distributedCache.RemoveAsync(key, cancellationToken);
     }
 
     private async Task TryRemoveCorruptedEntryAsync(string key, CancellationToken cancellationToken)
     {
-        if (_distributedCache is null)
+        if (distributedCache is null)
         {
             return;
         }
 
         try
         {
-            await _distributedCache.RemoveAsync(key, cancellationToken);
+            await distributedCache.RemoveAsync(key, cancellationToken);
         }
         catch (OperationCanceledException)
         {

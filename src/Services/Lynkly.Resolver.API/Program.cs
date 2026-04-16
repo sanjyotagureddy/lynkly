@@ -1,25 +1,16 @@
 using lynkly.ServiceDefaults;
-
-using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Lynkly.Resolver.API.Extensions;
+using Lynkly.Shared.Kernel.Core.Web;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.AddServiceDefaults();
-
-builder.Services.AddOpenApi();
-builder.Services
-	.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-	.AddJwtBearer();
-builder.Services.AddAuthorization();
+builder.Services.AddApiServices(builder.Configuration);
 
 var app = builder.Build();
 
 app.MapDefaultEndpoints();
-
-if (app.Environment.IsDevelopment())
-{
-	app.MapOpenApi();
-}
+app.UseSwaggerSupport();
 
 app.UseAuthentication();
 app.UseAuthorization();

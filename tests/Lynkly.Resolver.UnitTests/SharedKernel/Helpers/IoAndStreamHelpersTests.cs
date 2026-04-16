@@ -1,5 +1,7 @@
 using System.Text;
-using Lynkly.Shared.Kernel.Helpers;
+
+using Lynkly.Shared.Kernel.Core.Helpers;
+using Lynkly.Shared.Kernel.Core.Helpers.IO;
 
 namespace Lynkly.Resolver.UnitTests.SharedKernel.Helpers;
 

@@ -1,7 +1,8 @@
 using FluentValidation;
 using FluentValidation.Results;
-using Lynkly.Shared.Kernel.Exceptions;
-using Lynkly.Shared.Kernel.Validation;
+
+using Lynkly.Shared.Kernel.Core.Exceptions;
+using Lynkly.Shared.Kernel.Core.Validation;
 
 namespace Lynkly.Resolver.UnitTests.SharedKernel.Validation;
 

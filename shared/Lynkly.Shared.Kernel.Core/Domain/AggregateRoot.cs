@@ -1,14 +1,9 @@
 namespace Lynkly.Shared.Kernel.Core.Domain;
 
-public abstract class AggregateRoot<TId> : Entity<TId>
-    where TId : notnull
+public abstract class AggregateRoot<TId>(TId id) : Entity<TId>(id)
+  where TId : notnull
 {
     private readonly List<IDomainEvent> _domainEvents = [];
-
-    protected AggregateRoot(TId id)
-        : base(id)
-    {
-    }
 
     public IReadOnlyCollection<IDomainEvent> DomainEvents => _domainEvents.AsReadOnly();
 

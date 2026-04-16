@@ -1,4 +1,6 @@
-using Lynkly.Shared.Kernel.Helpers;
+using Lynkly.Shared.Kernel.Core.Helpers;
+using Lynkly.Shared.Kernel.Core.Helpers.Json;
+
 using Newtonsoft.Json;
 
 namespace Lynkly.Resolver.UnitTests.SharedKernel.Helpers;
