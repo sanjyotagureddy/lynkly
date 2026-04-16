@@ -4,11 +4,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="FluentValidation" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\Lynkly.Shared.Kernel.Exceptions\Lynkly.Shared.Kernel.Exceptions.csproj" />
+    
   </ItemGroup>
 
 </Project>

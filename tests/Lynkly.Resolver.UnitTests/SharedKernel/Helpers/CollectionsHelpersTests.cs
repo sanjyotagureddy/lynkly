@@ -1,4 +1,7 @@
-using Lynkly.Shared.Kernel.Helpers;
+using Lynkly.Shared.Kernel.Core.Helpers;
+using Lynkly.Shared.Kernel.Core.Helpers.Collections;
+
+using CollectionExtensions = Lynkly.Shared.Kernel.Core.Helpers.Collections.CollectionExtensions;
 
 namespace Lynkly.Resolver.UnitTests.SharedKernel.Helpers;
 
@@ -38,8 +41,8 @@ public sealed class CollectionsHelpersTests
         new[] { 1, 2, 3 }.ForEach(list.Add);
         Assert.Equal([1, 2, 3], list);
 
-        Assert.Throws<ArgumentNullException>(() => Lynkly.Shared.Kernel.Helpers.CollectionExtensions.WhereNotNull<string>(null!));
-        Assert.Throws<ArgumentNullException>(() => Lynkly.Shared.Kernel.Helpers.CollectionExtensions.ForEach<int>(null!, _ => { }));
+        Assert.Throws<ArgumentNullException>(() => CollectionExtensions.WhereNotNull<string>(null!));
+        Assert.Throws<ArgumentNullException>(() => CollectionExtensions.ForEach<int>(null!, _ => { }));
         Assert.Throws<ArgumentNullException>(() => new[] { 1 }.ForEach(null!));
     }
 }

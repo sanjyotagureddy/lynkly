@@ -3,14 +3,9 @@ using Microsoft.Extensions.Caching.Memory;
 
 namespace Lynkly.Shared.Kernel.Caching.Providers;
 
-internal sealed class InMemoryCacheProvider : ICacheProvider
+internal sealed class InMemoryCacheProvider(IMemoryCache memoryCache) : ICacheProvider
 {
-    private readonly IMemoryCache _memoryCache;
-
-    public InMemoryCacheProvider(IMemoryCache memoryCache)
-    {
-        _memoryCache = memoryCache ?? throw new ArgumentNullException(nameof(memoryCache));
-    }
+    private readonly IMemoryCache _memoryCache = memoryCache ?? throw new ArgumentNullException(nameof(memoryCache));
 
     public string Name => "in-memory";
 

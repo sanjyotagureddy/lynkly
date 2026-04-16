@@ -4,7 +4,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Lynkly.Shared.Kernel.Exceptions\Lynkly.Shared.Kernel.Exceptions.csproj" />
+    <PackageReference Include="FluentValidation" />
+    <PackageReference Include="Newtonsoft.Json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
   </ItemGroup>
 
 </Project>

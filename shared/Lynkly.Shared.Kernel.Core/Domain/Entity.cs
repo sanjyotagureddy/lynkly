@@ -1,14 +1,9 @@
 namespace Lynkly.Shared.Kernel.Core.Domain;
 
-public abstract class Entity<TId> : IEquatable<Entity<TId>>
-    where TId : notnull
+public abstract class Entity<TId>(TId id) : IEquatable<Entity<TId>>
+  where TId : notnull
 {
-    protected Entity(TId id)
-    {
-        Id = id;
-    }
-
-    public TId Id { get; protected init; }
+  public TId Id { get; protected init; } = id;
 
     public static bool operator ==(Entity<TId>? left, Entity<TId>? right)
     {
