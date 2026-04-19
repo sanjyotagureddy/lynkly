@@ -14,7 +14,11 @@ public static class ModuleRegistration
 
         services.AddLynklyMediator(typeof(ModuleRegistration).Assembly);
         services.AddOptions<AliasGeneratorOptions>()
-            .BindConfiguration(AliasGeneratorOptions.SectionName);
+            .BindConfiguration(AliasGeneratorOptions.SectionName)
+            .Validate(
+                opts => !string.IsNullOrWhiteSpace(opts.HmacKey),
+                $"{AliasGeneratorOptions.SectionName}:{nameof(AliasGeneratorOptions.HmacKey)} must be set to a non-empty secret.")
+            .ValidateOnStart();
         services.AddSingleton<IShortAliasGenerator, HmacShortAliasGenerator>();
         services.AddOptions<BlockedDomainOptions>()
             .BindConfiguration(BlockedDomainOptions.SectionName);
