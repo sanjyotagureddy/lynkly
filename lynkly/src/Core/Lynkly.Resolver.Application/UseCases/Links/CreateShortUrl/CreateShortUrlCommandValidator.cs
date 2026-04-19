@@ -29,6 +29,6 @@ public sealed class CreateShortUrlCommandValidator : AbstractValidator<CreateSho
             return false;
         }
 
-        return uri.Scheme is Uri.UriSchemeHttp or Uri.UriSchemeHttps;
+        return uri.Scheme == Uri.UriSchemeHttp || uri.Scheme == Uri.UriSchemeHttps;
     }
 }

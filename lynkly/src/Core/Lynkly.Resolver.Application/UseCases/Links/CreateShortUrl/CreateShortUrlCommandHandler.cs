@@ -26,7 +26,7 @@ public sealed class CreateShortUrlCommandHandler(
 
         var originalUrl = request.OriginalUrl.Trim();
         if (!Uri.TryCreate(originalUrl, UriKind.Absolute, out var destinationUri) ||
-            destinationUri.Scheme is not (Uri.UriSchemeHttp or Uri.UriSchemeHttps))
+            (destinationUri.Scheme != Uri.UriSchemeHttp && destinationUri.Scheme != Uri.UriSchemeHttps))
         {
             throw new InvalidDestinationUrlException(originalUrl);
         }

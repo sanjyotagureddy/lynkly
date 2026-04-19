@@ -4,7 +4,7 @@ using Lynkly.Resolver.Application.UseCases.Links.CreateShortUrl;
 using Lynkly.Resolver.Domain.Links;
 using Lynkly.Shared.Kernel.Core.Exceptions.UrlShortener;
 using Lynkly.Shared.Kernel.Messaging.Abstractions;
-using Lynkly.Shared.Kernel.Security.Encryption.Impl;
+using Lynkly.Shared.Kernel.Security.Encryption;
 using NSubstitute;
 
 namespace Lynkly.Resolver.UnitTests.Application.Links.CreateShortUrl;
@@ -15,7 +15,7 @@ public sealed class CreateShortUrlCommandHandlerTests
     public async Task Handle_EncryptsAndPersistsDestinationUrl_AndPublishesMessage()
     {
         var repository = new InMemoryLinkWriteRepository();
-        var encryptionService = new AesEncryptionService(new EncryptionKeyManager());
+        var encryptionService = new TestEncryptionService();
         var messagePublisher = Substitute.For<IMessagePublisher>();
         var handler = new CreateShortUrlCommandHandler(repository, encryptionService, messagePublisher);
 
@@ -47,7 +47,7 @@ public sealed class CreateShortUrlCommandHandlerTests
 
         var handler = new CreateShortUrlCommandHandler(
             repository,
-            new AesEncryptionService(new EncryptionKeyManager()),
+            new TestEncryptionService(),
             Substitute.For<IMessagePublisher>());
 
         var command = new CreateShortUrlCommand("https://example.com", "existing", null);
@@ -82,6 +82,34 @@ public sealed class CreateShortUrlCommandHandlerTests
         public Task SaveChangesAsync(CancellationToken cancellationToken)
         {
             return Task.CompletedTask;
+        }
+    }
+
+    private sealed class TestEncryptionService : IEncryptionService
+    {
+        public byte[] Encrypt(string input)
+        {
+            return Encrypt(Encoding.UTF8.GetBytes(input));
+        }
+
+        public byte[] Encrypt(byte[] input)
+        {
+            return [.. input.Reverse()];
+        }
+
+        public byte[] Encrypt(string input, string tenantId)
+        {
+            return Encrypt(input);
+        }
+
+        public byte[] Encrypt(byte[] input, string tenantId)
+        {
+            return Encrypt(input);
+        }
+
+        public byte[] Decrypt(byte[] encryptedData)
+        {
+            return [.. encryptedData.Reverse()];
         }
     }
 }
