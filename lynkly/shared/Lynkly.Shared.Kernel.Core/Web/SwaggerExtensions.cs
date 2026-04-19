@@ -8,7 +8,7 @@ using Swashbuckle.AspNetCore.SwaggerGen;
 
 namespace Lynkly.Shared.Kernel.Core.Web;
 
-public static class SwaggerExtensions
+public static partial class SwaggerExtensions
 {
     private const string SwaggerDocumentName = "v1";
     private const string BearerSecuritySchemeName = "Bearer";
@@ -21,11 +21,11 @@ public static class SwaggerExtensions
         {
             options.SwaggerDoc(SwaggerDocumentName, new OpenApiInfo
             {
-                Title = "UrlShortener API",
+                Title = "Lynkly Resolver API Docs",
                 Version = Constants.DefaultApiVersion
             });
 
-            options.OperationFilter<CorrelationIdHeaderOperationFilter>();
+            options.OperationFilter<RequestMetadataOperationFilter>();
 
             options.AddSecurityDefinition(BearerSecuritySchemeName, new OpenApiSecurityScheme
             {
@@ -38,7 +38,6 @@ public static class SwaggerExtensions
             });
 
             
-
             ConfigureKeycloakOpenIdConnect(options, configuration);
 
             var entryAssembly = Assembly.GetEntryAssembly();
@@ -65,6 +64,7 @@ public static class SwaggerExtensions
             app.UseSwaggerUI(options =>
             {
                 options.SwaggerEndpoint($"/swagger/{SwaggerDocumentName}/swagger.json", Constants.DefaultApiVersion);
+                options.DocumentTitle = "Lynkly Resolver API Docs";
                 options.DisplayRequestDuration();
 
                 var keycloakClientId = app.Configuration["Authentication:Keycloak:SwaggerClientId"];
@@ -123,26 +123,36 @@ public static class SwaggerExtensions
         });
     }
 
-    private sealed class CorrelationIdHeaderOperationFilter : IOperationFilter
+    // ReSharper disable once ClassNeverInstantiated.Local
+    private sealed class RequestMetadataOperationFilter : IOperationFilter
     {
-        public void Apply(OpenApiOperation operation, OperationFilterContext context)
+      private static readonly OpenApiParameter[] SharedParameters =
+      [
+        new()
         {
-            operation.Parameters ??= [];
-
-            if (operation.Parameters.Any(parameter =>
-                    string.Equals(parameter.Name, Constants.Headers.CorrelationId, StringComparison.OrdinalIgnoreCase)))
-            {
-                return;
-            }
-
-            operation.Parameters.Add(new OpenApiParameter
-            {
-                Name = Constants.Headers.CorrelationId,
-                In = ParameterLocation.Header,
-                Required = false,
-                Description = "Optional correlation id for end-to-end tracing.",
-                Schema = new OpenApiSchema { Type = JsonSchemaType.String }
-            });
+          Name = Constants.Headers.CorrelationId,
+          In = ParameterLocation.Header,
+          Required = false,
+          Description = "Optional correlation id for end-to-end tracing.",
+          Schema = new OpenApiSchema { Type = JsonSchemaType.String }
         }
+      ];
+
+      public void Apply(OpenApiOperation operation, OperationFilterContext context)
+      {
+        operation.Parameters ??= [];
+
+        foreach (var parameter in SharedParameters)
+        {
+          if (operation.Parameters.Any(existing =>
+                existing.In == parameter.In
+                && string.Equals(existing.Name, parameter.Name, StringComparison.OrdinalIgnoreCase)))
+          {
+            continue;
+          }
+
+          operation.Parameters.Add(parameter);
+        }
+      }
     }
 }
