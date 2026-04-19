@@ -1,5 +1,7 @@
 using Lynkly.Shared.Kernel.Caching.Abstractions;
 using Lynkly.Shared.Kernel.Caching.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 
 namespace Lynkly.Shared.Kernel.Caching.Providers;
 
@@ -8,10 +10,12 @@ internal sealed class CompositeCacheService : ICacheService
     private readonly IReadOnlyList<ICacheProvider> _providers;
     private readonly CacheServiceRegistrationOptions _registrationOptions;
     private readonly SemaphoreSlim[] _keyLocks = CreateKeyLocks();
+    private readonly ILogger<CompositeCacheService> _logger;
 
     public CompositeCacheService(
         IEnumerable<ICacheProvider> providers,
-        CacheServiceRegistrationOptions registrationOptions)
+        CacheServiceRegistrationOptions registrationOptions,
+        ILogger<CompositeCacheService>? logger = null)
     {
         ArgumentNullException.ThrowIfNull(providers);
         ArgumentNullException.ThrowIfNull(registrationOptions);
@@ -23,6 +27,7 @@ internal sealed class CompositeCacheService : ICacheService
         }
 
         _registrationOptions = registrationOptions;
+        _logger = logger ?? NullLogger<CompositeCacheService>.Instance;
     }
 
     public async Task<TValue?> GetAsync<TValue>(
@@ -44,6 +49,7 @@ internal sealed class CompositeCacheService : ICacheService
             }
             catch
             {
+                _logger.LogWarning("Cache provider {CacheProvider} failed while reading key {CacheKey}.", provider.Name, key.Value);
                 continue;
             }
 
@@ -68,6 +74,10 @@ internal sealed class CompositeCacheService : ICacheService
                         }
                         catch
                         {
+                            _logger.LogWarning(
+                                "Cache provider {CacheProvider} failed while backfilling key {CacheKey}.",
+                                previousProvider.Name,
+                                key.Value);
                         }
                     });
 
@@ -101,6 +111,7 @@ internal sealed class CompositeCacheService : ICacheService
             }
             catch
             {
+                _logger.LogWarning("Cache provider {CacheProvider} failed while writing key {CacheKey}.", provider.Name, key.Value);
             }
         }
     }

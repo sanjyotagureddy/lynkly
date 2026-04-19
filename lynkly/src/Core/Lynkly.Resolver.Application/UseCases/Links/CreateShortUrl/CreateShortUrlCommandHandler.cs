@@ -1,7 +1,9 @@
 using Lynkly.Resolver.Application.Abstractions;
 using Lynkly.Resolver.Application.Abstractions.Persistence;
+using Lynkly.Resolver.Application.UseCases.Links;
 using Lynkly.Resolver.Domain.Links;
 using Lynkly.Resolver.Domain.Links.Events;
+using Lynkly.Shared.Kernel.Caching.Abstractions;
 using Lynkly.Shared.Kernel.Core.Domain;
 using Lynkly.Shared.Kernel.Core.Exceptions.UrlShortener;
 using Lynkly.Shared.Kernel.Core.Helpers.Security;
@@ -16,6 +18,7 @@ public sealed class CreateShortUrlCommandHandler(
     IEncryptionService encryptionService,
     IShortAliasGenerator shortAliasGenerator,
     IMessagePublisher messagePublisher,
+    ICacheService cacheService,
     IBlockedDomainChecker blockedDomainChecker,
     TimeProvider? timeProvider = null) : IRequestHandler<CreateShortUrlCommand, CreateShortUrlResult>
 {
@@ -26,6 +29,7 @@ public sealed class CreateShortUrlCommandHandler(
     private readonly IEncryptionService _encryptionService = encryptionService ?? throw new ArgumentNullException(nameof(encryptionService));
     private readonly IShortAliasGenerator _shortAliasGenerator = shortAliasGenerator ?? throw new ArgumentNullException(nameof(shortAliasGenerator));
     private readonly IMessagePublisher _messagePublisher = messagePublisher ?? throw new ArgumentNullException(nameof(messagePublisher));
+    private readonly ICacheService _cacheService = cacheService ?? throw new ArgumentNullException(nameof(cacheService));
     private readonly IBlockedDomainChecker _blockedDomainChecker = blockedDomainChecker ?? throw new ArgumentNullException(nameof(blockedDomainChecker));
     private readonly TimeProvider _timeProvider = timeProvider ?? TimeProvider.System;
 
@@ -57,6 +61,15 @@ public sealed class CreateShortUrlCommandHandler(
 
         _repository.Add(link, linkAlias);
         await _repository.SaveChangesAsync(cancellationToken);
+
+        await _cacheService.SetAsync(
+            LinkCacheKeys.ResolveDestinationByAlias(linkAlias.Alias),
+            originalUrl,
+            new CacheEntryOptions
+            {
+                AbsoluteExpirationRelativeToNow = LinkCachingDefaults.DefaultCacheDuration
+            },
+            cancellationToken);
 
         await PublishDomainEventsAsync(link.DomainEvents, cancellationToken);
         link.ClearDomainEvents();

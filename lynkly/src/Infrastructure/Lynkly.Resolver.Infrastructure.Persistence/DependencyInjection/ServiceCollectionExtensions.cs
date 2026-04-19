@@ -21,6 +21,7 @@ public static class ServiceCollectionExtensions
 
         services.AddKernelPersistence();
         services.AddDbContext<AppDbContext>(options => options.UseNpgsql(connectionString));
+        services.AddScoped<ILinkReadRepository, LinkReadRepository>();
         services.AddScoped<ILinkWriteRepository, LinkWriteRepository>();
 
         return services;

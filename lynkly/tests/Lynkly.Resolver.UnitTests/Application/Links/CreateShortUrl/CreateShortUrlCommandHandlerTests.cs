@@ -1,7 +1,9 @@
 using System.Text;
 using Lynkly.Resolver.Application.Abstractions;
 using Lynkly.Resolver.Application.Abstractions.Persistence;
+using Lynkly.Resolver.Application.UseCases.Links;
 using Lynkly.Resolver.Application.UseCases.Links.CreateShortUrl;
+using Lynkly.Shared.Kernel.Caching.Abstractions;
 using Lynkly.Resolver.Domain.Links;
 using Lynkly.Shared.Kernel.Core.Exceptions.UrlShortener;
 using Lynkly.Shared.Kernel.Core.Helpers.Security;
@@ -25,6 +27,7 @@ public sealed class CreateShortUrlCommandHandlerTests
             encryption ?? new TestEncryptionService(),
             aliasGenerator ?? new TestShortAliasGenerator("generated-slug"),
             Substitute.For<IMessagePublisher>(),
+            Substitute.For<ICacheService>(),
             blockedDomainChecker ?? new AllowAllDomainChecker(),
             timeProvider);
     }
@@ -36,8 +39,10 @@ public sealed class CreateShortUrlCommandHandlerTests
         var encryptionService = new TestEncryptionService();
         var aliasGenerator = new TestShortAliasGenerator("generated-slug");
         var messagePublisher = Substitute.For<IMessagePublisher>();
+        var cacheService = Substitute.For<ICacheService>();
         var handler = new CreateShortUrlCommandHandler(
             repository, encryptionService, aliasGenerator, messagePublisher,
+            cacheService,
             new AllowAllDomainChecker());
 
         const string originalUrl = "https://example.com/some/long/path";
@@ -58,6 +63,12 @@ public sealed class CreateShortUrlCommandHandlerTests
                 message.TenantId == repository.DefaultTenantId.Value &&
                 message.EncryptedDestinationUrl == repository.StoredLink.DestinationUrl),
             Arg.Any<CancellationToken>());
+
+        await cacheService.Received(1).SetAsync(
+            Arg.Is<CacheKey<string>>(key => key.Value == "links:resolve:summer-sale"),
+            originalUrl,
+            Arg.Is<CacheEntryOptions>(options => options.AbsoluteExpirationRelativeToNow == LinkCachingDefaults.DefaultCacheDuration),
+            Arg.Any<CancellationToken>());
     }
 
     [Fact]
@@ -72,6 +83,7 @@ public sealed class CreateShortUrlCommandHandlerTests
             new TestEncryptionService(),
             aliasGenerator,
             Substitute.For<IMessagePublisher>(),
+            Substitute.For<ICacheService>(),
             new AllowAllDomainChecker());
 
         var command = new CreateShortUrlCommand("https://example.com/landing", null, null);
@@ -106,6 +118,7 @@ public sealed class CreateShortUrlCommandHandlerTests
             new TestEncryptionService(),
             new TestShortAliasGenerator("unused"),
             Substitute.For<IMessagePublisher>(),
+            Substitute.For<ICacheService>(),
             new AllowAllDomainChecker());
 
         var command = new CreateShortUrlCommand("https://example.com", "existing", null);
