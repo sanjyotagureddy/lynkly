@@ -22,7 +22,7 @@ public static class StringExtensions
 
         if (maxLength < 0)
         {
-            throw new ArgumentOutOfRangeException(nameof(maxLength), "Maximum length cannot be negative.");
+            throw SharedKernelException.InvalidArgument("Maximum length cannot be negative.");
         }
 
         return value.Length <= maxLength ? value : value[..maxLength];
