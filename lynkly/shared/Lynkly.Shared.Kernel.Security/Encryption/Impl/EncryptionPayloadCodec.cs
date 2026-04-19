@@ -112,11 +112,12 @@ internal static class EncryptionPayloadCodec
         byte[] nonce = payloadSpan.Slice(offset, EncryptionConstants.NonceSize).ToArray();
         offset += EncryptionConstants.NonceSize;
 
+        byte[] header = payloadSpan[..offset].ToArray();
+
         byte[] tag = payloadSpan.Slice(offset, EncryptionConstants.TagSize).ToArray();
         offset += EncryptionConstants.TagSize;
 
         byte[] cipherText = payloadSpan[offset..].ToArray();
-        byte[] header = payloadSpan[..offset].ToArray();
 
         return (
             new EncryptionPayloadMetadata(tenantId, salt, nonce),

@@ -59,6 +59,6 @@ public class EncryptionServiceTests
             parsedPayload.CipherText,
             parsedPayload.Tag);
 
-        Assert.Throws<CryptographicException>(() => service.Decrypt(tamperedPayload));
+        Assert.ThrowsAny<CryptographicException>(() => service.Decrypt(tamperedPayload));
     }
 }
