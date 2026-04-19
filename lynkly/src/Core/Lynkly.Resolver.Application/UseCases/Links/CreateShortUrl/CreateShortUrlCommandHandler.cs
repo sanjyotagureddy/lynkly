@@ -12,12 +12,14 @@ namespace Lynkly.Resolver.Application.UseCases.Links.CreateShortUrl;
 public sealed class CreateShortUrlCommandHandler(
     ILinkWriteRepository repository,
     IEncryptionService encryptionService,
+    IShortAliasGenerator shortAliasGenerator,
     IMessagePublisher messagePublisher) : IRequestHandler<CreateShortUrlCommand, CreateShortUrlResult>
 {
     private const int MaxAliasGenerationAttempts = 5;
 
     private readonly ILinkWriteRepository _repository = repository ?? throw new ArgumentNullException(nameof(repository));
     private readonly IEncryptionService _encryptionService = encryptionService ?? throw new ArgumentNullException(nameof(encryptionService));
+    private readonly IShortAliasGenerator _shortAliasGenerator = shortAliasGenerator ?? throw new ArgumentNullException(nameof(shortAliasGenerator));
     private readonly IMessagePublisher _messagePublisher = messagePublisher ?? throw new ArgumentNullException(nameof(messagePublisher));
 
     public async Task<CreateShortUrlResult> Handle(CreateShortUrlCommand request, CancellationToken cancellationToken)
@@ -63,7 +65,7 @@ public sealed class CreateShortUrlCommandHandler(
 
         for (var attempt = 0; attempt < MaxAliasGenerationAttempts; attempt++)
         {
-            var generatedAlias = GenerateAlias();
+            var generatedAlias = _shortAliasGenerator.Generate(tenantId, request.OriginalUrl, attempt);
             var exists = await _repository.AliasExistsAsync(tenantId, generatedAlias, cancellationToken);
             if (!exists)
             {
@@ -73,11 +75,6 @@ public sealed class CreateShortUrlCommandHandler(
 
         throw new InvalidOperationException(
             $"Failed to generate a unique alias after {MaxAliasGenerationAttempts} attempts. Please retry or provide a custom alias.");
-    }
-
-    private static string GenerateAlias()
-    {
-        return Guid.NewGuid().ToString("N")[..8].ToLowerInvariant();
     }
 
     private Task PublishDomainEventsAsync(IEnumerable<IDomainEvent> domainEvents, CancellationToken cancellationToken)

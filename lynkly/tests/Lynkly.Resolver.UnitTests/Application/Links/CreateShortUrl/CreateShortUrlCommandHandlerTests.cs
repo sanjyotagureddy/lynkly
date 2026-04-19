@@ -16,8 +16,9 @@ public sealed class CreateShortUrlCommandHandlerTests
     {
         var repository = new InMemoryLinkWriteRepository();
         var encryptionService = new TestEncryptionService();
+        var aliasGenerator = new TestShortAliasGenerator("generated-slug");
         var messagePublisher = Substitute.For<IMessagePublisher>();
-        var handler = new CreateShortUrlCommandHandler(repository, encryptionService, messagePublisher);
+        var handler = new CreateShortUrlCommandHandler(repository, encryptionService, aliasGenerator, messagePublisher);
 
         const string originalUrl = "https://example.com/some/long/path";
         var command = new CreateShortUrlCommand(originalUrl, "summer-sale", DateTimeOffset.UtcNow.AddDays(2));
@@ -40,6 +41,40 @@ public sealed class CreateShortUrlCommandHandlerTests
     }
 
     [Fact]
+    public async Task Handle_GeneratesAliasFromUrlAndTenant_AndRetriesOnCollision()
+    {
+        var repository = new InMemoryLinkWriteRepository();
+        repository.ExistingAliases.Add("collision-slug");
+
+        var aliasGenerator = new TestShortAliasGenerator("collision-slug", "final-slug");
+        var handler = new CreateShortUrlCommandHandler(
+            repository,
+            new TestEncryptionService(),
+            aliasGenerator,
+            Substitute.For<IMessagePublisher>());
+
+        var command = new CreateShortUrlCommand("https://example.com/landing", null, null);
+
+        var result = await handler.Handle(command, CancellationToken.None);
+
+        Assert.Equal("final-slug", result.Alias);
+        Assert.Collection(
+            aliasGenerator.Calls,
+            call =>
+            {
+                Assert.Equal(repository.DefaultTenantId, call.TenantId);
+                Assert.Equal("https://example.com/landing", call.OriginalUrl);
+                Assert.Equal(0, call.Attempt);
+            },
+            call =>
+            {
+                Assert.Equal(repository.DefaultTenantId, call.TenantId);
+                Assert.Equal("https://example.com/landing", call.OriginalUrl);
+                Assert.Equal(1, call.Attempt);
+            });
+    }
+
+    [Fact]
     public async Task Handle_ThrowsConflict_WhenAliasAlreadyExists()
     {
         var repository = new InMemoryLinkWriteRepository();
@@ -48,6 +83,7 @@ public sealed class CreateShortUrlCommandHandlerTests
         var handler = new CreateShortUrlCommandHandler(
             repository,
             new TestEncryptionService(),
+            new TestShortAliasGenerator("unused"),
             Substitute.For<IMessagePublisher>());
 
         var command = new CreateShortUrlCommand("https://example.com", "existing", null);
@@ -110,6 +146,24 @@ public sealed class CreateShortUrlCommandHandlerTests
         public byte[] Decrypt(byte[] encryptedData)
         {
             return [.. encryptedData.Reverse()];
+        }
+    }
+
+    private sealed class TestShortAliasGenerator(params string[] aliases) : IShortAliasGenerator
+    {
+        private readonly string[] _aliases = aliases;
+        public List<(TenantId TenantId, string OriginalUrl, int Attempt)> Calls { get; } = [];
+
+        public string Generate(TenantId tenantId, string originalUrl, int attempt)
+        {
+            Calls.Add((tenantId, originalUrl, attempt));
+
+            if (attempt < _aliases.Length)
+            {
+                return _aliases[attempt];
+            }
+
+            return _aliases[^1];
         }
     }
 }
