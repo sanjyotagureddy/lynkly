@@ -156,6 +156,9 @@ public sealed class CreateShortUrlCommandHandlerTests
 
         public string Generate(TenantId tenantId, string originalUrl, int attempt)
         {
+            ArgumentNullException.ThrowIfNull(originalUrl);
+            ArgumentOutOfRangeException.ThrowIfNegative(attempt);
+
             Calls.Add((tenantId, originalUrl, attempt));
 
             if (attempt < _aliases.Length)

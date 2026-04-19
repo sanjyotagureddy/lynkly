@@ -37,7 +37,7 @@ public sealed class CreateShortUrlCommandHandler(
         var encryptedUrl = Convert.ToBase64String(_encryptionService.Encrypt(originalUrl, tenantId.ToString()));
 
         var link = Link.Create(tenantId, encryptedUrl, request.ExpiresAtUtc);
-        var alias = await ResolveAliasAsync(tenantId, request.Alias, cancellationToken);
+        var alias = await ResolveAliasAsync(tenantId, originalUrl, request.Alias, cancellationToken);
         var linkAlias = LinkAlias.Create(tenantId, link.Id, alias, isPrimary: true);
 
         _repository.Add(link, linkAlias);
@@ -49,7 +49,7 @@ public sealed class CreateShortUrlCommandHandler(
         return new CreateShortUrlResult(link.Id.Value, linkAlias.Alias);
     }
 
-    private async Task<string> ResolveAliasAsync(TenantId tenantId, string? requestedAlias, CancellationToken cancellationToken)
+    private async Task<string> ResolveAliasAsync(TenantId tenantId, string originalUrl, string? requestedAlias, CancellationToken cancellationToken)
     {
         if (!string.IsNullOrWhiteSpace(requestedAlias))
         {
@@ -65,7 +65,7 @@ public sealed class CreateShortUrlCommandHandler(
 
         for (var attempt = 0; attempt < MaxAliasGenerationAttempts; attempt++)
         {
-            var generatedAlias = _shortAliasGenerator.Generate(tenantId, request.OriginalUrl, attempt);
+            var generatedAlias = _shortAliasGenerator.Generate(tenantId, originalUrl, attempt);
             var exists = await _repository.AliasExistsAsync(tenantId, generatedAlias, cancellationToken);
             if (!exists)
             {

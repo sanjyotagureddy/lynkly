@@ -13,7 +13,7 @@ public sealed class Sha256ShortAliasGenerator : IShortAliasGenerator
         ArgumentNullException.ThrowIfNull(originalUrl);
         ArgumentOutOfRangeException.ThrowIfNegative(attempt);
 
-        var material = $"{tenantId.Value:N}|{originalUrl.Trim()}|{attempt}";
+        var material = $"{tenantId.Value:N}|{originalUrl}|{attempt}";
         var hashBytes = SHA256.HashData(Encoding.UTF8.GetBytes(material));
         var hash = Convert.ToHexString(hashBytes);
         return hash[..AliasLength].ToLowerInvariant();

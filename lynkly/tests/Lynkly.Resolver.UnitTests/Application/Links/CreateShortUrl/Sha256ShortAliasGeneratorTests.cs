@@ -39,4 +39,20 @@ public sealed class Sha256ShortAliasGeneratorTests
 
         Assert.NotEqual(first, second);
     }
+
+    [Fact]
+    public void Generate_Should_Throw_WhenOriginalUrlIsNull()
+    {
+        var generator = new Sha256ShortAliasGenerator();
+
+        Assert.Throws<ArgumentNullException>(() => generator.Generate(TenantId, null!, 0));
+    }
+
+    [Fact]
+    public void Generate_Should_Throw_WhenAttemptIsNegative()
+    {
+        var generator = new Sha256ShortAliasGenerator();
+
+        Assert.Throws<ArgumentOutOfRangeException>(() => generator.Generate(TenantId, "https://example.com/path", -1));
+    }
 }
