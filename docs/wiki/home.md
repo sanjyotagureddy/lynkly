@@ -15,8 +15,8 @@ Core rule: keep redirects fast and move analytics work to asynchronous processin
 
 ## Start Here
 
-1. Read the [project README](/README.md) for system goals and architecture.
-2. Review the [technology stack](/docs/architecture/tech-stack.md) for approved tooling choices.
+1. Read the [project README](../../README.md) for system goals and architecture.
+2. Review the [technology stack](../architecture/tech-stack.md) for approved tooling choices.
 3. Use the structure below when navigating source code:
    - `src/Services/Lynkly.Resolver.API`: HTTP surface and composition root
    - `src/Core/Lynkly.Resolver.Application`: use-case orchestration
