@@ -21,7 +21,7 @@ public sealed class ResolveShortUrlEndpoint : IEndpoint
                 {
                     if (!TryGetCacheExpiryOverrideSeconds(httpContext, out var cacheExpirySeconds, out var validationError))
                     {
-                        return Results.ValidationProblem(validationError);
+                        return Results.ValidationProblem(validationError!);
                     }
 
                     var result = await mediator.Send(

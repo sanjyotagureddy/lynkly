@@ -1,5 +1,6 @@
 using Lynkly.Resolver.API.Endpoints.Links;
 using Lynkly.Resolver.Application.UseCases.Links.ResolveShortUrl;
+using Microsoft.AspNetCore.Http;
 using Lynkly.Shared.Kernel.MediatR.Abstractions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
