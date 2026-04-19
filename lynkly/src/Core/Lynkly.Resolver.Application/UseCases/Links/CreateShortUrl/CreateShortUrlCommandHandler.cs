@@ -62,6 +62,9 @@ public sealed class CreateShortUrlCommandHandler(
         _repository.Add(link, linkAlias);
         await _repository.SaveChangesAsync(cancellationToken);
 
+        await PublishDomainEventsAsync(link.DomainEvents, cancellationToken);
+        link.ClearDomainEvents();
+
         await _cacheService.SetAsync(
             LinkCacheKeys.ResolveDestinationByAlias(linkAlias.Alias),
             originalUrl,
@@ -70,9 +73,6 @@ public sealed class CreateShortUrlCommandHandler(
                 AbsoluteExpirationRelativeToNow = LinkCachingDefaults.DefaultCacheDuration
             },
             cancellationToken);
-
-        await PublishDomainEventsAsync(link.DomainEvents, cancellationToken);
-        link.ClearDomainEvents();
 
         return new CreateShortUrlResult(link.Id.Value, linkAlias.Alias);
     }

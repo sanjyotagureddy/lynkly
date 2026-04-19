@@ -49,7 +49,7 @@ internal sealed class CompositeCacheService : ICacheService
             }
             catch
             {
-                _logger.LogWarning("Cache provider {CacheProvider} failed while reading key {CacheKey}.", provider.Name, key.Value);
+                _logger.LogWarning("Cache provider {CacheProvider} failed while reading a cache entry.", provider.Name);
                 continue;
             }
 
@@ -75,9 +75,8 @@ internal sealed class CompositeCacheService : ICacheService
                         catch
                         {
                             _logger.LogWarning(
-                                "Cache provider {CacheProvider} failed while backfilling key {CacheKey}.",
-                                previousProvider.Name,
-                                key.Value);
+                                "Cache provider {CacheProvider} failed while backfilling a cache entry.",
+                                previousProvider.Name);
                         }
                     });
 
@@ -111,7 +110,7 @@ internal sealed class CompositeCacheService : ICacheService
             }
             catch
             {
-                _logger.LogWarning("Cache provider {CacheProvider} failed while writing key {CacheKey}.", provider.Name, key.Value);
+                _logger.LogWarning("Cache provider {CacheProvider} failed while writing a cache entry.", provider.Name);
             }
         }
     }

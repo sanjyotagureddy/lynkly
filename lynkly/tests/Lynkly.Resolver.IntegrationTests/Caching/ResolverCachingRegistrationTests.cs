@@ -40,7 +40,7 @@ public sealed class ResolverCachingRegistrationTests
         var configuration = new ConfigurationBuilder()
             .AddInMemoryCollection(new Dictionary<string, string?>
             {
-                ["ConnectionStrings:lynkly-redis"] = "localhost:0,abortConnect=true,connectTimeout=10,syncTimeout=10"
+                ["ConnectionStrings:lynkly-redis"] = "localhost:0,abortConnect=true,connectTimeout=1000,syncTimeout=1000"
             })
             .Build();
 
