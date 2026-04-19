@@ -24,6 +24,7 @@ The entire system is designed around one rule: keep redirects extremely fast, mo
 16. [Testing Strategy and Coverage Policy](#testing-strategy-and-coverage-policy)
 17. [Local Development](#local-development)
 18. [Roadmap](#roadmap)
+19. [Wiki](#wiki)
 
 ## Product Goal
 
@@ -574,6 +575,10 @@ dotnet run --project src/Lynkly.Resolver.Api
 - v1.1: Custom aliases, expiration, tenant isolation.
 - v1.2: Multi-region hardening, advanced SLO dashboards, resilience automation.
 - v2: Smart routing, bot detection, richer analytics dimensions.
+
+## Wiki
+
+Use the repository wiki entry page at [docs/wiki/home.md](docs/wiki/home.md) for a fast onboarding and contribution index.
 
 ---
 
