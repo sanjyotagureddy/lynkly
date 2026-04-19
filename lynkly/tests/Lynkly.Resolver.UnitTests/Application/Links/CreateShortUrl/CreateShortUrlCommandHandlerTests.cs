@@ -182,13 +182,14 @@ public sealed class CreateShortUrlCommandHandlerTests
         logger.Received().LogInformation(
             "CreateShortUrl command handling started RequestId {RequestId} CorrelationId {CorrelationId} UserId {UserId} Alias {Alias}",
             Arg.Any<object?[]>());
-        logger.Received().LogInformation(
-            "CreateShortUrl command handling completed RequestId {RequestId} CorrelationId {CorrelationId} EntityId {EntityId} Alias {Alias}",
-            Arg.Is<object?[]>(values =>
-                values.Length == 4 &&
-                values[2] is Guid entityId &&
-                entityId == result.LinkId &&
-                values[3]?.ToString() == result.Alias));
+
+        var completionCall = logger.ReceivedCalls().First(call =>
+            call.GetMethodInfo().Name == nameof(IStructuredLogger<CreateShortUrlCommandHandler>.LogInformation)
+            && call.GetArguments()[0] is string messageTemplate
+            && messageTemplate == "CreateShortUrl command handling completed RequestId {RequestId} CorrelationId {CorrelationId} EntityId {EntityId} Alias {Alias}");
+        var completionArguments = Assert.IsType<object?[]>(completionCall.GetArguments()[1]);
+        Assert.Equal(result.LinkId, Assert.IsType<Guid>(completionArguments[2]));
+        Assert.Equal(result.Alias, completionArguments[3]?.ToString());
     }
 
     [Fact]

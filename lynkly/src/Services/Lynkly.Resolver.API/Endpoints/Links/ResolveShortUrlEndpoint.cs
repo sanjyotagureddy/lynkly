@@ -4,6 +4,7 @@ using Lynkly.Shared.Kernel.Core.Web;
 using Lynkly.Shared.Kernel.Logging.Abstractions;
 using Lynkly.Shared.Kernel.MediatR.Abstractions;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Lynkly.Resolver.API.Endpoints.Links;
 
@@ -19,15 +20,15 @@ public sealed class ResolveShortUrlEndpoint : IEndpoint
                     string alias,
                     HttpContext httpContext,
                     IMediator mediator,
-                    IStructuredLogger<ResolveShortUrlEndpoint> logger,
                     CancellationToken cancellationToken) =>
                 {
+                    var endpointLogger = httpContext.RequestServices.GetService<IStructuredLogger<ResolveShortUrlEndpoint>>();
                     var requestId = httpContext.TraceIdentifier;
                     var userId = httpContext.User.Identity?.Name
                                  ?? httpContext.Request.Headers[Constants.Headers.UserId].ToString()
                                  ?? "anonymous";
 
-                    logger.LogInformation(
+                    endpointLogger?.LogInformation(
                         "Resolve short URL endpoint started RequestId {RequestId} UserId {UserId} Alias {Alias}",
                         requestId,
                         userId,
@@ -35,7 +36,7 @@ public sealed class ResolveShortUrlEndpoint : IEndpoint
 
                     if (!TryGetCacheExpiryOverrideSeconds(httpContext, out var cacheExpirySeconds, out var validationError))
                     {
-                        logger.LogWarning(
+                        endpointLogger?.LogWarning(
                             "Resolve short URL request validation failed RequestId {RequestId} UserId {UserId} Alias {Alias}",
                             requestId,
                             userId,
@@ -49,7 +50,7 @@ public sealed class ResolveShortUrlEndpoint : IEndpoint
 
                     if (result is null)
                     {
-                        logger.LogWarning(
+                        endpointLogger?.LogWarning(
                             "Resolve short URL not found RequestId {RequestId} UserId {UserId} Alias {Alias}",
                             requestId,
                             userId,
@@ -57,7 +58,7 @@ public sealed class ResolveShortUrlEndpoint : IEndpoint
                     }
                     else
                     {
-                        logger.LogInformation(
+                        endpointLogger?.LogInformation(
                             "Resolve short URL completed RequestId {RequestId} UserId {UserId} Alias {Alias}",
                             requestId,
                             userId,

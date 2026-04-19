@@ -6,10 +6,10 @@ namespace Lynkly.Resolver.Infrastructure.Messaging.Internal;
 
 internal sealed class MassTransitMessagePublisher(
     IPublishEndpoint publishEndpoint,
-    IStructuredLogger<MassTransitMessagePublisher> logger) : IMessagePublisher
+    IStructuredLogger<MassTransitMessagePublisher>? logger = null) : IMessagePublisher
 {
     private readonly IPublishEndpoint _publishEndpoint = publishEndpoint ?? throw new ArgumentNullException(nameof(publishEndpoint));
-    private readonly IStructuredLogger<MassTransitMessagePublisher> _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+    private readonly IStructuredLogger<MassTransitMessagePublisher> _logger = logger ?? NoOpStructuredLogger<MassTransitMessagePublisher>.Instance;
 
     public async Task PublishAsync<TMessage>(TMessage message, CancellationToken cancellationToken = default)
         where TMessage : class

@@ -7,9 +7,9 @@ public sealed class RequestContextMiddleware(
     RequestDelegate next,
     IHostEnvironment environment,
     IEnumerable<IRequestContextEnricher> enrichers,
-    IStructuredLogger<RequestContextMiddleware> logger)
+    IStructuredLogger<RequestContextMiddleware>? logger = null)
 {
-    private readonly IStructuredLogger<RequestContextMiddleware> _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+    private readonly IStructuredLogger<RequestContextMiddleware> _logger = logger ?? NoOpStructuredLogger<RequestContextMiddleware>.Instance;
 
     public async Task InvokeAsync(HttpContext httpContext)
     {

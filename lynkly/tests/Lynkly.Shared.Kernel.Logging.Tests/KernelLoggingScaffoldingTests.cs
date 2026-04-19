@@ -15,7 +15,9 @@ public sealed class KernelLoggingScaffoldingTests
         var configuration = new ConfigurationBuilder().Build();
 
         Assert.Throws<ArgumentNullException>(() =>
-            ServiceCollectionExtensions.AddKernelLogging(null!, configuration));
+        {
+            _ = ServiceCollectionExtensions.AddKernelLogging(null!, configuration);
+        });
     }
 
     [Fact]
@@ -24,7 +26,9 @@ public sealed class KernelLoggingScaffoldingTests
         var services = new ServiceCollection();
 
         Assert.Throws<ArgumentNullException>(() =>
-            services.AddKernelLogging(null!));
+        {
+            _ = services.AddKernelLogging(null!);
+        });
     }
 
     [Fact]

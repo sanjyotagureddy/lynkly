@@ -10,7 +10,7 @@ internal sealed class StructuredLogger<TCategory>(ILogger<TCategory> logger) : I
     public IDisposable BeginScope(IReadOnlyDictionary<string, object?> properties)
     {
         ArgumentNullException.ThrowIfNull(properties);
-        return _logger.BeginScope(properties);
+        return _logger.BeginScope(properties) ?? NoOpScope.Instance;
     }
 
     public void LogInformation(string messageTemplate, params object?[] propertyValues)
@@ -30,4 +30,13 @@ internal sealed class StructuredLogger<TCategory>(ILogger<TCategory> logger) : I
     }
 
     public bool IsEnabled(LogLevel logLevel) => _logger.IsEnabled(logLevel);
+
+    private sealed class NoOpScope : IDisposable
+    {
+        public static NoOpScope Instance { get; } = new();
+
+        public void Dispose()
+        {
+        }
+    }
 }
