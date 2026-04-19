@@ -342,7 +342,7 @@ Lynkly.sln
 │   │   ├── Helpers/
 │   │   ├── Validation/
 │   │   ├── Exceptions/
-│   │   └── RequestContext/
+│   │   └── Context/
 │   │
 │   ├── Lynkly.Shared.Kernel.Caching
 │   ├── Lynkly.Shared.Kernel.Logging
