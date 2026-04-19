@@ -1,3 +1,4 @@
+using Lynkly.Shared.Kernel.MediatR.Extensions;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Lynkly.Resolver.Application.DependencyInjection;
@@ -8,7 +9,7 @@ public static class ModuleRegistration
     {
         ArgumentNullException.ThrowIfNull(services);
 
-        
+        services.AddLynklyMediator(typeof(ModuleRegistration).Assembly);
 
         return services;
     }
