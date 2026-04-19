@@ -9,7 +9,7 @@ namespace Lynkly.Resolver.IntegrationTests.Persistence;
 public sealed class CreateShortUrlPersistenceRegistrationTests
 {
     [Fact]
-    public void AddResolverPersistence_RegistersDbContextAndLinkWriteRepository()
+    public void AddResolverPersistence_RegistersDbContextAndLinkRepositories()
     {
         var services = new ServiceCollection();
         var configuration = new ConfigurationBuilder()
@@ -25,6 +25,7 @@ public sealed class CreateShortUrlPersistenceRegistrationTests
         using var scope = provider.CreateScope();
 
         Assert.NotNull(scope.ServiceProvider.GetRequiredService<AppDbContext>());
+        Assert.NotNull(scope.ServiceProvider.GetRequiredService<ILinkReadRepository>());
         Assert.NotNull(scope.ServiceProvider.GetRequiredService<ILinkWriteRepository>());
     }
 }
