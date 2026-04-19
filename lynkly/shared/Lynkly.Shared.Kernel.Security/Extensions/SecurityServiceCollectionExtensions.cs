@@ -19,7 +19,7 @@ public static class SecurityServiceCollectionExtensions
         services.TryAddSingleton<ISecurityService, NoOpSecurityService>();
         services.TryAddSingleton<ITokenService, NoOpTokenService>();
         services.TryAddSingleton<IUserContext, NoOpUserContext>();
-        services.TryAddSingleton<EncryptionKeyManager>();
+        services.TryAddSingleton(_ => EncryptionKeyManager.Create(configuration));
         services.TryAddSingleton<IEncryptionService, AesEncryptionService>();
 
         return services;

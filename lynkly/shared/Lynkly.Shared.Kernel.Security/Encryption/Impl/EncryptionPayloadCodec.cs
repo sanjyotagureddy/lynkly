@@ -103,7 +103,7 @@ internal static class EncryptionPayloadCodec
         offset += tenantLength;
         if (string.IsNullOrWhiteSpace(tenantId))
         {
-            throw new CryptographicException("Encrypted payload is missing tenant metadata.");
+            throw new CryptographicException("Encrypted payload contains invalid tenant metadata.");
         }
 
         byte[] salt = payloadSpan.Slice(offset, EncryptionConstants.SaltSize).ToArray();
