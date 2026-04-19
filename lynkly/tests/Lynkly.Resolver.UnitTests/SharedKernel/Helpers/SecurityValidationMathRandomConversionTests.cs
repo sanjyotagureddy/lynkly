@@ -18,9 +18,11 @@ public sealed class SecurityValidationMathRandomConversionTests
     {
         var hash = SecurityHelper.ComputeSha256("abc");
         var base64 = SecurityHelper.ToBase64("lynkly");
+        var base64Bytes = SecurityHelper.ToBase64([1, 2, 3, 4]);
 
         Assert.Equal("ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad", hash);
         Assert.Equal("lynkly", SecurityHelper.FromBase64(base64));
+        Assert.Equal([1, 2, 3, 4], SecurityHelper.FromBase64ToBytes(base64Bytes));
         Assert.True(SecurityHelper.FixedTimeEquals("a", "a"));
         Assert.False(SecurityHelper.FixedTimeEquals("a", "b"));
         Assert.False(SecurityHelper.FixedTimeEquals("a", "aa"));
@@ -29,7 +31,9 @@ public sealed class SecurityValidationMathRandomConversionTests
 
         Assert.Throws<ArgumentNullException>(() => SecurityHelper.ComputeSha256(null!));
         Assert.Throws<ArgumentNullException>(() => SecurityHelper.ToBase64(null!));
+        Assert.Throws<ArgumentNullException>(() => SecurityHelper.ToBase64((byte[])null!));
         Assert.Throws<ArgumentNullException>(() => SecurityHelper.FromBase64(null!));
+        Assert.Throws<ArgumentNullException>(() => SecurityHelper.FromBase64ToBytes(null!));
     }
 
     [Fact]
